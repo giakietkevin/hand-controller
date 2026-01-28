@@ -8,8 +8,8 @@ class HandDetector:
             static_image_mode=False,
             max_num_hands=1,
             model_complexity=model_complexity,
-            min_detection_confidence=0.6,
-            min_tracking_confidence=0.6
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5
         )
         self.mp_draw = mp.solutions.drawing_utils
 
@@ -25,6 +25,9 @@ class HandDetector:
                 
                 h, w, _ = img.shape
                 for lm in hand_lms.landmark:
-                    all_lms.append([lm.x * w, lm.y * h])
+                    # Chuyển đổi sang số nguyên (int) để tránh lỗi vẽ hình
+                    all_lms.append([int(lm.x * w), int(lm.y * h)])
         
+        # QUAN TRỌNG: Return phải nằm ngoài cùng để luôn trả về giá trị
+        # ngay cả khi không tìm thấy tay.
         return img, all_lms
