@@ -1,26 +1,19 @@
-from engine.utils import get_distance
+import numpy as np
 
 class HandController:
-    def __init__(self, click_threshold=30):
+    def __init__(self, click_threshold=35):
         self.click_threshold = click_threshold
 
     def get_gesture(self, landmarks):
-        if len(landmarks) == 0:
-            return None
+        if not landmarks: return "IDLE"
 
-        # Landmark 4: Ngón cái (Thumb), Landmark 8: Ngón trỏ (Index)
-        thumb_tip = landmarks[4]
-        index_tip = landmarks[8]
-        middle_tip = landmarks[12]
+        # Tọa độ ngón cái (4) và ngón trỏ (8)
+        thumb = np.array([landmarks[4][0], landmarks[4][1]])
+        index = np.array([landmarks[8][0], landmarks[8][1]])
 
-        # Tính khoảng cách giữa ngón cái và ngón trỏ để xác định cú Click
-        dist = get_distance(thumb_tip, index_tip)
-        
+        # Tính khoảng cách Euclidean
+        dist = np.linalg.norm(thumb - index)
+
         if dist < self.click_threshold:
             return "CLICK"
-        
-        # Nếu ngón trỏ giơ cao hơn các ngón khác -> Di chuyển
-        if index_tip[1] < middle_tip[1]:
-            return "MOVE"
-            
-        return "IDLE"
+        return "MOVE"
